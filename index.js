@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const options = {
+  const config = {
     highlightType: 'semantics',
     containerId: '__element-highlighter-container',
     boxClass: '__element-highlighter-box',
@@ -26,9 +26,6 @@
       left: 0;
       top: 0;
       width: 100%;
-    `,
-    containerChildren: `
-
     `,
     box: `
       position: absolute;
@@ -88,11 +85,11 @@
   };
 
   const createContainer = function () {
-    let container = document.getElementById(options.containerId);
+    let container = document.getElementById(config.containerId);
 
     if (!container) {
       container = document.createElement('div');
-      container.id = options.containerId;
+      container.id = config.containerId;
       container.setAttribute('style', css(styles.container));
       container.style.height = `${getDocumentHeight()}px`;
       document.body.appendChild(container);
@@ -101,65 +98,87 @@
     return container;
   };
 
-  const createBox = function (elem, color, offset = 0) {
+  const createBox = function (elem, color, opts = {}) {
     const box = document.createElement('div');
 
     box.setAttribute('style', css(styles.box, {
       color: color,
-      offset: offset,
+      offset: (opts.offset) ? opts.offset : 0,
     }));
     box.style.top = `${elem.offsetTop}px`;
     box.style.left = `${elem.offsetLeft}px`;
     box.style.width = `${elem.offsetWidth}px`;
     box.style.height = `${elem.offsetHeight}px`;
-    box.classList.add(options.boxClass);
+    box.classList.add(config.boxClass);
 
     return box;
   };
 
-  const createLabel = function (elem, color, offset = 0) {
+  const createLabel = function (elem, color, opts = {}) {
     const label = document.createElement('span');
 
     label.setAttribute('style', css(styles.label, {
       color: color,
     }));
-    label.innerText = elem.tagName.toUpperCase();
-    label.classList.add(options.labelClass);
+    label.classList.add(config.labelClass);
 
-    if (offset > 0) {
+    if (opts.labelText) {
+      label.innerText = (typeof opts.labelText === 'function') ? opts.labelText(elem) : opts.labelText;
+    } else {
+      label.innerText = elem.tagName.toUpperCase();
+    }
+
+    if (opts.offset && opts.offset > 0) {
       label.style.left = 'auto';
-      label.style.right = `-${offset}px`;
-      label.style.top = `-${offset}px`;
+      label.style.right = `-${opts.offset}px`;
+      label.style.top = `-${opts.offset}px`;
     }
 
     return label;
   };
 
-  const highlightElem = function (elem, container, offset) {
+  const highlightElem = function (elem, container, opts = {}) {
     const color = getRandomColor();
-    const box = createBox(elem, color, offset);
-    const label = createLabel(elem, color, offset);
+    const box = createBox(elem, color, opts);
+    const label = createLabel(elem, color, opts);
 
     box.appendChild(label);
     container.appendChild(box);
   };
 
-  const highlightSemantics = function () {
+  const highlightElements = function (elems, opts = {}) {
     const container = createContainer();
-    const allElems = document.querySelectorAll('body *');
 
-    for (let elem of allElems) {
-      const offset = (elem.matches(options.offsetBoxSelectors)) ? 2 : 0;
+    for (let elem of elems) {
+      opts.offset = (elem.matches(config.offsetBoxSelectors)) ? 2 : 0;
 
-      if (!elem.matches(options.ignoreSelectors)) {
-        highlightElem(elem, container, offset);
+      if (!elem.matches(config.ignoreSelectors)) {
+        highlightElem(elem, container, opts);
       }
     }
   };
 
+  const highlightByClassList = function (classes) {
+    highlightElements(document.querySelectorAll(`.${classes.join(',.')}`), {
+      labelText: (elem) => '.' + [].filter.call(elem.classList, (cls) => classes.indexOf(cls) > -1).join(' .'),
+    });
+  };
+
+  const highlightSemantics = function () {
+    highlightElements(document.querySelectorAll('body *'));
+  };
+
+  const highlightModules = function () {
+    highlightByClassList(['img-flex']);
+    highlightByClassList(['list-group', 'list-group-inline']);
+    highlightByClassList(['btn', 'btn-ghost', 'btn-light']);
+    highlightByClassList(['embed', 'embed-16by9', 'embed-1by1', 'embed-4by3', 'embed-iso216', 'embed-3by2', 'embed-2by3', 'embed-golden', 'embed-16by9', 'embed-185by100', 'embed-24by10', 'embed-3by1', 'embed-4by1', 'embed-5by1']);
+    highlightByClassList(['media', 'media-img', 'media-body', 'media-img-reversed', 'media-img-stacked']);
+  };
+
   const findHighlightType = function () {
     const userHighlightTypeElem = document.querySelector('[data-element-highlighter]');
-    let highlightType = options.highlightType;
+    let highlightType = config.highlightType;
 
     if (userHighlightTypeElem && userHighlightTypeElem.dataset.elementHighlighter) {
       highlightType = userHighlightTypeElem.dataset.elementHighlighter;
@@ -174,6 +193,7 @@
     freezeBodyWidth();
 
     if (highlightType.indexOf('semantics') > -1) highlightSemantics();
+    if (highlightType.indexOf('module') > -1) highlightModules();
   };
 
   const whenDocumentIsReady = function (next) {
