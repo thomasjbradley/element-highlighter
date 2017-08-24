@@ -34,10 +34,8 @@
       outline-offset: {{offset}}px;
     `,
     label: `
-      left: 0;
       padding: .1em .3em;
       position: absolute;
-      top: 0;
       z-index: 1000;
       background-color: {{color}};
       color: #fff;
@@ -117,6 +115,11 @@
 
   const createLabel = function (elem, color, opts = {}) {
     const label = document.createElement('span');
+    let labelCoords = {
+      top: elem.offsetTop,
+      left: elem.offsetLeft,
+      right: document.documentElement.clientWidth - (elem.offsetLeft + elem.offsetWidth),
+    };
 
     label.setAttribute('style', css(styles.label, {
       color: color,
@@ -130,9 +133,13 @@
     }
 
     if (opts.offset && opts.offset > 0) {
-      label.style.left = 'auto';
-      label.style.right = `-${opts.offset}px`;
-      label.style.top = `-${opts.offset}px`;
+      labelCoords.top -= opts.offset;
+      labelCoords.right -= opts.offset;
+      label.style.top = `${labelCoords.top}px`;
+      label.style.right = `${labelCoords.right}px`;
+    } else {
+      label.style.top = `${labelCoords.top}px`;
+      label.style.left = `${labelCoords.left}px`;
     }
 
     return label;
@@ -143,7 +150,7 @@
     const box = createBox(elem, color, opts);
     const label = createLabel(elem, color, opts);
 
-    box.appendChild(label);
+    container.appendChild(label);
     container.appendChild(box);
   };
 
