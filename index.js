@@ -16,7 +16,8 @@
     offsetBoxSelectors: `
       ol, dl,
       blockquote,
-      main, article, section, aside, footer, nav
+      main:not(.unit), article:not(.unit), section:not(.unit), aside:not(.unit), footer:not(.unit), nav:not(.unit),
+      .grid, .embed
     `,
   };
 
@@ -158,9 +159,11 @@
     }
   };
 
-  const highlightByClassList = function (classes) {
+  const highlightByClassList = function (classes, labelTextDef) {
+    if (!labelTextDef) labelTextDef = (elem) => '.' + [].filter.call(elem.classList, (cls) => classes.indexOf(cls) > -1).join(' .');
+
     highlightElements(document.querySelectorAll(`.${classes.join(',.')}`), {
-      labelText: (elem) => '.' + [].filter.call(elem.classList, (cls) => classes.indexOf(cls) > -1).join(' .'),
+      labelText: labelTextDef,
     });
   };
 
@@ -174,6 +177,19 @@
     highlightByClassList(['btn', 'btn-ghost', 'btn-light']);
     highlightByClassList(['embed', 'embed-16by9', 'embed-1by1', 'embed-4by3', 'embed-iso216', 'embed-3by2', 'embed-2by3', 'embed-golden', 'embed-16by9', 'embed-185by100', 'embed-24by10', 'embed-3by1', 'embed-4by1', 'embed-5by1']);
     highlightByClassList(['media', 'media-img', 'media-body', 'media-img-reversed', 'media-img-stacked']);
+  };
+
+  const highlightGrids = function () {
+    highlightByClassList(['grid']);
+    highlightByClassList(['unit'], (elem) => {
+      let matchingClasses = [].filter.call(elem.classList, (cls) => {
+        if (cls === 'unit') return true;
+        if (/^unit\-\d/.test(cls)) return true;
+        return /^[a-z]{1,2}\-\d+(\-\d+)?$/i.test(cls);
+      });
+
+      return '.' + matchingClasses.join(' .');
+    });
   };
 
   const findHighlightType = function () {
@@ -192,8 +208,9 @@
 
     freezeBodyWidth();
 
-    if (highlightType.indexOf('semantics') > -1) highlightSemantics();
+    if (highlightType.indexOf('semantic') > -1) highlightSemantics();
     if (highlightType.indexOf('module') > -1) highlightModules();
+    if (highlightType.indexOf('grid') > -1) highlightGrids();
   };
 
   const whenDocumentIsReady = function (next) {
