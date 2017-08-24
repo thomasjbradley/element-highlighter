@@ -1,0 +1,26 @@
+{
+  "name": "element-highlighter",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Thomas J Bradley <hey@thomasjbradley.ca>",
+  "license": "MIT",
+  "description": "Highlights semantics, grids, and modules on an HTML page for discussion",
+  "homepage": "https://github.com/thomasjbradley/element-highlighter#readme",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasjbradley/element-highlighter.git"
+  },
+  "keywords": [
+    "html",
+    "semantics",
+    "grids",
+    "modules",
+    "discussion",
+    "teaching",
+    "tool"
+  ],
+  "bugs": {
+    "url": "https://github.com/thomasjbradley/element-highlighter/issues"
+  }
+}
