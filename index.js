@@ -117,6 +117,7 @@
     const label = document.createElement('span');
     let labelCoords = {
       top: elem.offsetTop,
+      bottom: elem.offsetTop + elem.offsetHeight,
       left: elem.offsetLeft,
       right: document.documentElement.clientWidth - (elem.offsetLeft + elem.offsetWidth),
     };
@@ -132,14 +133,24 @@
       label.innerText = elem.tagName.toUpperCase();
     }
 
-    if (opts.offset && opts.offset > 0) {
-      labelCoords.top -= opts.offset;
-      labelCoords.right -= opts.offset;
-      label.style.top = `${labelCoords.top}px`;
-      label.style.right = `${labelCoords.right}px`;
+    if (opts.position) {
+      switch (opts.position) {
+        case 'bottom-left':
+          label.style.top = `${labelCoords.bottom}px`;
+          label.style.left = `${labelCoords.left}px`;
+          label.style.transform = 'translateY(-100%)';
+          break;
+      }
     } else {
-      label.style.top = `${labelCoords.top}px`;
-      label.style.left = `${labelCoords.left}px`;
+      if (opts.offset && opts.offset > 0) {
+        labelCoords.top -= opts.offset;
+        labelCoords.right -= opts.offset;
+        label.style.top = `${labelCoords.top}px`;
+        label.style.right = `${labelCoords.right}px`;
+      } else {
+        label.style.top = `${labelCoords.top}px`;
+        label.style.left = `${labelCoords.left}px`;
+      }
     }
 
     return label;
@@ -205,6 +216,18 @@
     });
   };
 
+  const highlightLabels = function () {
+    const container = createContainer();
+    const elems = document.querySelectorAll('[data-element-highlighter-label]');
+
+    for (let elem of elems) {
+      highlightElem(elem, container, {
+        labelText: elem.dataset.elementHighlighterLabel.toUpperCase(),
+        position: 'bottom-left',
+      });
+    }
+  };
+
   const findHighlightType = function () {
     const userHighlightTypeElem = document.querySelector('[data-element-highlighter]');
     let highlightType = config.highlightType;
@@ -225,6 +248,8 @@
     if (highlightType.indexOf('-div') > -1) highlightDivs();
     if (highlightType.indexOf('module') > -1) highlightModules();
     if (highlightType.indexOf('grid') > -1) highlightGrids();
+
+    highlightLabels();
   };
 
   const whenDocumentIsReady = function (next) {
