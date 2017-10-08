@@ -224,7 +224,9 @@
     const waitImgs = document.querySelectorAll('img, picture');
     const waitMedia = document.querySelectorAll('video, audio');
     let totalListeners = 2 + waitImgs.length + waitMedia.length;
-    let checker;
+    let checker, finalChecker;
+
+    finalChecker = setTimeout(() => next(), 4000);
 
     window.addEventListener('load', () => totalListeners--);
     document.fonts.ready.then(() => totalListeners--);
@@ -240,6 +242,7 @@
     checker = setInterval(() => {
       if (totalListeners <= 0) {
         clearInterval(checker);
+        clearTimeout(finalChecker);
         return next();
       }
     }, 75);
