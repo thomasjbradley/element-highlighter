@@ -160,7 +160,7 @@
     for (let elem of elems) {
       opts.offset = (elem.matches(config.offsetBoxSelectors)) ? 2 : 0;
 
-      if (!elem.matches(config.ignoreSelectors)) {
+      if ((opts.match && elem.matches(opts.match)) || !elem.matches(config.ignoreSelectors)) {
         highlightElem(elem, container, opts);
       }
     }
@@ -176,6 +176,12 @@
 
   const highlightSemantics = function () {
     highlightElements(document.querySelectorAll('body *'));
+  };
+
+  const highlightDivs = function () {
+    highlightElements(document.querySelectorAll('body div'), {
+      match: 'div:not([class*="__element-highlighter"]):not([id*="__element-highlighter"])',
+    });
   };
 
   const highlightModules = function () {
@@ -216,6 +222,7 @@
     freezeBodyWidth();
 
     if (highlightType.indexOf('semantic') > -1) highlightSemantics();
+    if (highlightType.indexOf('-div') > -1) highlightDivs();
     if (highlightType.indexOf('module') > -1) highlightModules();
     if (highlightType.indexOf('grid') > -1) highlightGrids();
   };
