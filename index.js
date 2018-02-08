@@ -216,13 +216,13 @@
     });
   };
 
-  const highlightLabels = function () {
+  const highlightAttr = function (attr) {
     const container = createContainer();
-    const elems = document.querySelectorAll('[data-element-highlighter-label]');
+    const elems = document.querySelectorAll(`[${attr}]`);
 
     for (let elem of elems) {
       highlightElem(elem, container, {
-        labelText: elem.dataset.elementHighlighterLabel.toUpperCase(),
+        labelText: elem.getAttribute(attr).toUpperCase(),
         position: 'bottom-left',
       });
     }
@@ -248,8 +248,9 @@
     if (highlightType.indexOf('-div') > -1) highlightDivs();
     if (highlightType.indexOf('module') > -1) highlightModules();
     if (highlightType.indexOf('grid') > -1) highlightGrids();
+    if (highlightType.indexOf('class') > -1) highlightAttr('class');
 
-    highlightLabels();
+    highlightAttr('data-element-highlighter-label');
   };
 
   const whenDocumentIsReady = function (next) {
