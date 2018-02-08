@@ -22,10 +22,11 @@ The idea behind this project is to help other teachers understand what to explai
 
 The `data-element-highlighter` attribute can contain one, or many, of these values:
 
-- `semantics`
-- `semantics-divs`
-- `grids`
-- `modules`
+- `semantics` — Highlight all unique semantic tags
+- `semantics-divs` — Highlight only `<div>` tags
+- `grids` — Highlight important Gridifier boxes
+- `modules` — Highlight important Modulifier boxes
+- `classes` — Make all the classes visible
 
 That’s it! Run it in the browser and test it out. Here’s an example of the output:
 
