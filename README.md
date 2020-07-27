@@ -26,7 +26,7 @@ The idea behind this project is to help other teachers understand what to explai
 The `data-element-highlighter` attribute can contain one, or many, of these values:
 
 - `semantics` — Highlight all unique semantic tags
-- `semantics-numbers` — Highlight all unique semantic tags, but instead of showing the tag name, write a number
+- `semantics-numbers` — Highlight all semantic tags, but instead of the tag name, display a number
 - `semantics-divs` — Highlight only `<div>` tags
 - `grids` — Highlight important Gridifier boxes
 - `modules` — Highlight important Modulifier boxes
