@@ -2,7 +2,7 @@
 
 **A small script to write out & highlight HTML elements, modules or grids for better in-class solutions examples.**
 
-The idea behind this project is to help other teachers understand what to explain as solutions to in-class exercises. One example would be when I get students to sketch the semantic HTML tags onto a piece of paper. I create the solution in HTML, but want to explain the tags on the projector to the whole class. *This will create a little diagram for other teachers showing what tags to explain and where they are instead of them having to scour the code.*
+The idea behind this project is to help other teachers understand what to explain as solutions to in-class exercises. One example would be when I get students to sketch the semantic HTML tags onto a piece of paper. I create the solution in HTML, but want to explain the tags on the projector to the whole class. _This will create a little diagram for other teachers showing what tags to explain and where they are instead of them having to scour the code._
 
 ---
 
@@ -17,12 +17,16 @@ The idea behind this project is to help other teachers understand what to explai
 2. Tell element-highlighter what to highlight by adding a `data-element-highlighter` attribute:
 
 ```js
-<script data-element-highlighter="semantics grids modules" src="https://thomasjbradley.github.io/element-highlighter/index.js"></script>
+<script
+  data-element-highlighter="semantics grids modules"
+  src="https://thomasjbradley.github.io/element-highlighter/index.js"
+></script>
 ```
 
 The `data-element-highlighter` attribute can contain one, or many, of these values:
 
 - `semantics` — Highlight all unique semantic tags
+- `semantics-numbers` — Highlight all unique semantic tags, but instead of showing the tag name, write a number
 - `semantics-divs` — Highlight only `<div>` tags
 - `grids` — Highlight important Gridifier boxes
 - `modules` — Highlight important Modulifier boxes
@@ -37,12 +41,10 @@ That’s it! Run it in the browser and test it out. Here’s an example of the o
 You can add a data attribute to elements and that element will be displayed in the box too.
 
 ```html
-<div data-element-highlighter-label="inline-block">
-
-</div>
+<div data-element-highlighter-label="inline-block"></div>
 ```
 
-*This example can be used to call out the fact that this element is styled with `display: inline-block`*
+_This example can be used to call out the fact that this element is styled with `display: inline-block`_
 
 ### Caveats
 
@@ -56,4 +58,4 @@ You can add a data attribute to elements and that element will be displayed in t
 
 ## License & copyright
 
-© 2017 Thomas J Bradley · [Licensed under the MIT License](LICENSE)
+© 2017– Thomas J Bradley · [Licensed under the MIT License](LICENSE)

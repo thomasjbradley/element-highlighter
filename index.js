@@ -1,11 +1,11 @@
 (function () {
-  'use strict';
+  "use strict";
 
   const config = {
-    highlightType: 'semantics',
-    containerId: '__element-highlighter-container',
-    boxClass: '__element-highlighter-box',
-    labelClass: '__element-highlighter-label',
+    highlightType: "semantics",
+    containerId: "__element-highlighter-container",
+    boxClass: "__element-highlighter-box",
+    labelClass: "__element-highlighter-label",
     ignoreSelectors: `
       div:not(.grid):not(.unit):not(.embed), script, span, br,
       li:not(:first-child), dt:not(:first-child), dd:not(:nth-child(2)),
@@ -53,7 +53,7 @@
   };
 
   const getRandomColor = function () {
-    let colorValues = '0123456789abcdef';
+    let colorValues = "0123456789abcdef";
     let randRed = colorValues[getRandomInt(0, colorValues.length)];
     let randGreen = colorValues[getRandomInt(0, colorValues.length)];
     let randBlue = colorValues[getRandomInt(0, colorValues.length)];
@@ -66,7 +66,7 @@
       styles = styles.replace(new RegExp(`{{${key}}}`), opts[key]);
     });
 
-    return styles.trim().replace(/\;\s*/g, ';').replace(/\:\s*/g, ':');
+    return styles.trim().replace(/\;\s*/g, ";").replace(/\:\s*/g, ":");
   };
 
   const getDocumentHeight = function () {
@@ -80,16 +80,16 @@
   };
 
   const freezeBodyWidth = function () {
-    document.body.style.overflowX = 'hidden';
+    document.body.style.overflowX = "hidden";
   };
 
   const createContainer = function () {
     let container = document.getElementById(config.containerId);
 
     if (!container) {
-      container = document.createElement('div');
+      container = document.createElement("div");
       container.id = config.containerId;
-      container.setAttribute('style', css(styles.container));
+      container.setAttribute("style", css(styles.container));
       container.style.height = `${getDocumentHeight()}px`;
       document.body.appendChild(container);
     }
@@ -98,12 +98,15 @@
   };
 
   const createBox = function (elem, color, opts = {}) {
-    const box = document.createElement('div');
+    const box = document.createElement("div");
 
-    box.setAttribute('style', css(styles.box, {
-      color: color,
-      offset: (opts.offset) ? opts.offset : 0,
-    }));
+    box.setAttribute(
+      "style",
+      css(styles.box, {
+        color: color,
+        offset: opts.offset ? opts.offset : 0,
+      })
+    );
     box.style.top = `${elem.offsetTop}px`;
     box.style.left = `${elem.offsetLeft}px`;
     box.style.width = `${elem.offsetWidth}px`;
@@ -114,31 +117,39 @@
   };
 
   const createLabel = function (elem, color, opts = {}) {
-    const label = document.createElement('span');
+    const label = document.createElement("span");
     let labelCoords = {
       top: elem.offsetTop,
       bottom: elem.offsetTop + elem.offsetHeight,
       left: elem.offsetLeft,
-      right: document.documentElement.clientWidth - (elem.offsetLeft + elem.offsetWidth),
+      right:
+        document.documentElement.clientWidth -
+        (elem.offsetLeft + elem.offsetWidth),
     };
 
-    label.setAttribute('style', css(styles.label, {
-      color: color,
-    }));
+    label.setAttribute(
+      "style",
+      css(styles.label, {
+        color: color,
+      })
+    );
     label.classList.add(config.labelClass);
 
     if (opts.labelText) {
-      label.innerText = (typeof opts.labelText === 'function') ? opts.labelText(elem) : opts.labelText;
+      label.innerText =
+        typeof opts.labelText === "function"
+          ? opts.labelText(elem)
+          : opts.labelText;
     } else {
       label.innerText = elem.tagName.toUpperCase();
     }
 
     if (opts.position) {
       switch (opts.position) {
-        case 'bottom-left':
+        case "bottom-left":
           label.style.top = `${labelCoords.bottom}px`;
           label.style.left = `${labelCoords.left}px`;
-          label.style.transform = 'translateY(-100%)';
+          label.style.transform = "translateY(-100%)";
           break;
       }
     } else {
@@ -167,52 +178,92 @@
 
   const highlightElements = function (elems, opts = {}) {
     const container = createContainer();
+    const showNumbers = opts.numeric || false;
+    let number = 1;
 
-    for (let elem of elems) {
-      opts.offset = (elem.matches(config.offsetBoxSelectors)) ? 2 : 0;
-
-      if ((opts.match && elem.matches(opts.match)) || !elem.matches(config.ignoreSelectors)) {
+    [].forEach.call(elems, (elem) => {
+      opts.offset = elem.matches(config.offsetBoxSelectors) ? 2 : 0;
+      if (
+        (opts.match && elem.matches(opts.match)) ||
+        !elem.matches(config.ignoreSelectors)
+      ) {
+        if (showNumbers) {
+          opts.labelText = number++;
+        }
         highlightElem(elem, container, opts);
       }
-    }
+    });
   };
 
   const highlightByClassList = function (classes, labelTextDef) {
-    if (!labelTextDef) labelTextDef = (elem) => '.' + [].filter.call(elem.classList, (cls) => classes.indexOf(cls) > -1).join(' .');
+    if (!labelTextDef)
+      labelTextDef = (elem) =>
+        "." +
+        [].filter
+          .call(elem.classList, (cls) => classes.indexOf(cls) > -1)
+          .join(" .");
 
-    highlightElements(document.querySelectorAll(`.${classes.join(',.')}`), {
+    highlightElements(document.querySelectorAll(`.${classes.join(",.")}`), {
       labelText: labelTextDef,
     });
   };
 
   const highlightSemantics = function () {
-    highlightElements(document.querySelectorAll('body *'));
+    highlightElements(document.querySelectorAll("body *"));
+  };
+
+  const highlightSemanticsNumbers = function () {
+    highlightElements(document.querySelectorAll("body *"), {
+      numeric: true,
+    });
   };
 
   const highlightDivs = function () {
-    highlightElements(document.querySelectorAll('body div'), {
-      match: 'div:not([class*="__element-highlighter"]):not([id*="__element-highlighter"])',
+    highlightElements(document.querySelectorAll("body div"), {
+      match:
+        'div:not([class*="__element-highlighter"]):not([id*="__element-highlighter"])',
     });
   };
 
   const highlightModules = function () {
-    highlightByClassList(['img-flex']);
-    highlightByClassList(['list-group', 'list-group-inline']);
-    highlightByClassList(['btn', 'btn-ghost', 'btn-light']);
-    highlightByClassList(['embed', 'embed-16by9', 'embed-1by1', 'embed-4by3', 'embed-iso216', 'embed-3by2', 'embed-2by3', 'embed-golden', 'embed-16by9', 'embed-185by100', 'embed-24by10', 'embed-3by1', 'embed-4by1', 'embed-5by1']);
-    highlightByClassList(['media', 'media-img', 'media-body', 'media-img-reversed', 'media-img-stacked']);
+    highlightByClassList(["img-flex"]);
+    highlightByClassList(["list-group", "list-group-inline"]);
+    highlightByClassList(["btn", "btn-ghost", "btn-light"]);
+    highlightByClassList([
+      "embed",
+      "embed-16by9",
+      "embed-1by1",
+      "embed-4by3",
+      "embed-iso216",
+      "embed-3by2",
+      "embed-2by3",
+      "embed-golden",
+      "embed-16by9",
+      "embed-185by100",
+      "embed-24by10",
+      "embed-3by1",
+      "embed-4by1",
+      "embed-5by1",
+    ]);
+    highlightByClassList([
+      "media",
+      "media-img",
+      "media-body",
+      "media-img-reversed",
+      "media-img-stacked",
+    ]);
   };
 
   const highlightGrids = function () {
-    highlightByClassList(['grid']);
-    highlightByClassList(['unit'], (elem) => {
+    highlightByClassList(["grid"]);
+    highlightByClassList(["unit"], (elem) => {
       let matchingClasses = [].filter.call(elem.classList, (cls) => {
-        if (cls === 'unit') return true;
+        if (cls === "unit") return true;
         if (/^unit\-\d/.test(cls)) return true;
         return /^[a-z]{1,2}\-\d+(\-\d+)?$/i.test(cls);
       });
 
-      return '.' + matchingClasses.join(' .');
+      return "." + matchingClasses.join(" .");
     });
   };
 
@@ -223,16 +274,21 @@
     for (let elem of elems) {
       highlightElem(elem, container, {
         labelText: elem.getAttribute(attr).toUpperCase(),
-        position: 'bottom-left',
+        position: "bottom-left",
       });
     }
   };
 
   const findHighlightType = function () {
-    const userHighlightTypeElem = document.querySelector('[data-element-highlighter]');
+    const userHighlightTypeElem = document.querySelector(
+      "[data-element-highlighter]"
+    );
     let highlightType = config.highlightType;
 
-    if (userHighlightTypeElem && userHighlightTypeElem.dataset.elementHighlighter) {
+    if (
+      userHighlightTypeElem &&
+      userHighlightTypeElem.dataset.elementHighlighter
+    ) {
       highlightType = userHighlightTypeElem.dataset.elementHighlighter;
     }
 
@@ -244,32 +300,42 @@
 
     freezeBodyWidth();
 
-    if (highlightType.indexOf('semantic') > -1) highlightSemantics();
-    if (highlightType.indexOf('-div') > -1) highlightDivs();
-    if (highlightType.indexOf('module') > -1) highlightModules();
-    if (highlightType.indexOf('grid') > -1) highlightGrids();
-    if (highlightType.indexOf('class') > -1) highlightAttr('class');
+    if (
+      highlightType.indexOf("semantic") > -1 &&
+      highlightType.indexOf("-number") < 0
+    )
+      //Don’t highlight semantics if `numbers` is passed, it will highlight them numerically
+      highlightSemantics();
+    if (highlightType.indexOf("-number") > -1) highlightSemanticsNumbers();
+    if (highlightType.indexOf("-div") > -1) highlightDivs();
+    if (highlightType.indexOf("module") > -1) highlightModules();
+    if (highlightType.indexOf("grid") > -1) highlightGrids();
+    if (highlightType.indexOf("class") > -1) highlightAttr("class");
 
-    highlightAttr('data-element-highlighter-label');
+    highlightAttr("data-element-highlighter-label");
   };
 
   const whenDocumentIsReady = function (next) {
-    const waitImgs = document.querySelectorAll('img, picture');
-    const waitMedia = document.querySelectorAll('video, audio');
+    const waitImgs = document.querySelectorAll("img, picture");
+    const waitMedia = document.querySelectorAll("video, audio");
     let totalListeners = 2 + waitImgs.length + waitMedia.length;
     let checker, finalChecker;
 
     finalChecker = setTimeout(() => next(), 4000);
 
-    window.addEventListener('load', () => totalListeners--);
+    window.addEventListener("load", () => totalListeners--);
     document.fonts.ready.then(() => totalListeners--);
 
     for (let elem of waitImgs) {
-      elem.addEventListener('load', () => requestAnimationFrame(() => totalListeners--));
+      elem.addEventListener("load", () =>
+        requestAnimationFrame(() => totalListeners--)
+      );
     }
 
     for (let elem of waitMedia) {
-      elem.addEventListener('loadedmetadata', () => requestAnimationFrame(() => totalListeners--));
+      elem.addEventListener("loadedmetadata", () =>
+        requestAnimationFrame(() => totalListeners--)
+      );
     }
 
     checker = setInterval(() => {
@@ -282,4 +348,4 @@
   };
 
   whenDocumentIsReady(init);
-}());
+})();
